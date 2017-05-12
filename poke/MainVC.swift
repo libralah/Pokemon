@@ -30,8 +30,8 @@ class MainVC: UIViewController, UICollectionViewDelegate, UICollectionViewDataSo
         do {
             let csv = try CSV(contentsOfURL: path!)
             for row in csv.rows {
-                var name:String!
-                var ID:String!
+                var name = ""
+                var ID = ""
                 if let identifier = row["identifier"] {
                     name = identifier
                 }
