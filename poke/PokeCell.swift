@@ -20,5 +20,7 @@ class PokeCell: UICollectionViewCell {
         
         name.text = pokemon.name
     }
+ 
+    
     
 }

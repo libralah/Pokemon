@@ -7,12 +7,15 @@
 //
 
 import UIKit
+import AVFoundation
 
 class MainVC: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
 
     @IBOutlet weak var collectionView: UICollectionView!
     
+    var musicPlayer = AVAudioPlayer()
     var pokemon = [Pokemon]()
+    var musicPlaying = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -20,7 +23,21 @@ class MainVC: UIViewController, UICollectionViewDelegate, UICollectionViewDataSo
         collectionView.delegate = self
         collectionView.dataSource = self
         
+        loadSong()
         parseCSV()
+        
+    }
+    
+    func loadSong() {
+        
+        let path = URL(fileURLWithPath: Bundle.main.path(forResource: "music", ofType: ".mp3")!)
+        
+        do {
+            musicPlayer = try AVAudioPlayer(contentsOf: path)
+            musicPlayer.prepareToPlay()
+        } catch let error as NSError {
+            print(error)
+        }
         
     }
 
@@ -32,6 +49,9 @@ class MainVC: UIViewController, UICollectionViewDelegate, UICollectionViewDataSo
             for row in csv.rows {
                 var name = ""
                 var ID = ""
+                var pokeHeight = ""
+                var pokeWeight = ""
+                
                 if let identifier = row["identifier"] {
                     name = identifier
                 }
@@ -40,7 +60,15 @@ class MainVC: UIViewController, UICollectionViewDelegate, UICollectionViewDataSo
                     ID = number
                 }
                 
-                let poke = Pokemon(name: name, ID: ID)
+                if let height = row["height"] {
+                    pokeHeight = height
+                }
+                
+                if let weight = row["weight"] {
+                    pokeWeight = weight
+                }
+                
+                let poke = Pokemon(name: name, ID: ID, height: pokeHeight, weight: pokeWeight)
                 pokemon.append(poke)
                 
             }
@@ -51,7 +79,20 @@ class MainVC: UIViewController, UICollectionViewDelegate, UICollectionViewDataSo
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        //
+        if collectionView.cellForItem(at: indexPath) != nil {
+            let poke = pokemon[indexPath.row]
+            performSegue(withIdentifier: "PokeDetailsVC", sender: poke)
+        }
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "PokeDetailsVC" {
+            if let package = sender as? Pokemon {
+                if let destination = segue.destination as? PokemonDetailsVC {
+                    destination.pokemon = package
+                }
+            }
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -76,6 +117,13 @@ class MainVC: UIViewController, UICollectionViewDelegate, UICollectionViewDataSo
     }
     
     @IBAction func musicBtnPressed(_ sender: UIButton) {
+        if musicPlaying {
+            musicPlaying = false
+            musicPlayer.pause()
+        } else {
+            musicPlaying = true
+            musicPlayer.play()
+        }
     }
 
 }

@@ -14,11 +14,29 @@ class Pokemon {
     
     fileprivate var _pokedexID: String!
     
+    fileprivate var _height: String!
+    
+    fileprivate var _weight: String!
+    
+    var weight: String {
+       if _weight == nil {
+            _weight = ""
+        }
+        return _weight
+    }
+    
+    var height: String {
+        if _height == nil {
+            _height = ""
+        }
+        return _height
+    }
+    
     var name: String {
         if _name == nil {
             _name = ""
         }
-        return _name
+        return _name.capitalized
     }
     
     var pokedexID: String {
@@ -28,11 +46,15 @@ class Pokemon {
         return _pokedexID
     }
     
-    init (name: String, ID: String) {
+    init (name: String, ID: String, height: String, weight: String) {
         
         _name = name
         
         _pokedexID = ID
+        
+        _height = height
+        
+        _weight = weight
     }
     
 }
